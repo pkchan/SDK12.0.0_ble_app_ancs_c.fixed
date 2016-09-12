@@ -878,7 +878,10 @@ static void bsp_event_handler(bsp_event_t event)
 
         case BSP_EVENT_KEY_1:
             err_code = ble_ancs_c_request_attrs(&m_ancs_c, &m_notification_latest);
-            APP_ERROR_CHECK(err_code);
+            if (err_code != NRF_ERROR_BUSY)
+            {
+                APP_ERROR_CHECK(err_code);
+            }
             break;
 
         default:

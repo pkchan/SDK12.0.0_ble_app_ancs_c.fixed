@@ -602,6 +602,11 @@ void ble_ancs_c_on_ble_evt(ble_ancs_c_t * p_ancs, const ble_evt_t * p_ble_evt)
         case BLE_GAP_EVT_DISCONNECTED:
             on_disconnected(p_ancs, p_ble_evt);
             break;
+
+        case BLE_GAP_EVT_CONNECTED:
+            p_ancs->parse_state = DONE;
+            break;
+
         default:
             break;
     }
@@ -786,13 +791,19 @@ uint32_t ble_ancs_c_request_attrs(ble_ancs_c_t * p_ancs,
                                   const ble_ancs_c_evt_notif_t * p_notif)
 {
     uint32_t err_code;
+
+    if (p_ancs->parse_state != DONE)
+    {
+        return NRF_ERROR_BUSY;
+    }
+
     err_code = ble_ancs_verify_notification_format(p_notif);
     VERIFY_SUCCESS(err_code);
 
     err_code            = ble_ancs_get_notif_attrs(p_ancs, p_notif->notif_uid);
-    p_ancs->parse_state = COMMAND_ID_AND_NOTIF_UID;
     VERIFY_SUCCESS(err_code);
 
+    p_ancs->parse_state = COMMAND_ID_AND_NOTIF_UID;
     return NRF_SUCCESS;
 }
 
