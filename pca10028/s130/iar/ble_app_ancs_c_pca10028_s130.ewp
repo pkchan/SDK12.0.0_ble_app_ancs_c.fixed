@@ -976,7 +976,7 @@
     <name>$PROJ_DIR$\..\..\..\..\..\..\components\ble\ble_advertising\ble_advertising.c</name>    </file>    <file>
     <name>$PROJ_DIR$\..\..\..\..\..\..\components\ble\common\ble_conn_params.c</name>    </file>    <file>
     <name>$PROJ_DIR$\..\..\..\..\..\..\components\ble\common\ble_conn_state.c</name>    </file>    <file>
-    <name>$PROJ_DIR$\..\..\..\..\..\..\components\ble\ble_db_discovery\ble_db_discovery.c</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\SDK.mod\ble_db_discovery.c</name>    </file>    <file>
     <name>$PROJ_DIR$\..\..\..\..\..\..\components\ble\common\ble_srv_common.c</name>    </file>    <file>
     <name>$PROJ_DIR$\..\..\..\..\..\..\components\ble\peer_manager\gatt_cache_manager.c</name>    </file>    <file>
     <name>$PROJ_DIR$\..\..\..\..\..\..\components\ble\peer_manager\gatts_cache_manager.c</name>    </file>    <file>
