@@ -56,7 +56,7 @@ SRC_FILES += \
   $(SDK_ROOT)/components/ble/peer_manager/security_manager.c \
   $(SDK_ROOT)/components/toolchain/gcc/gcc_startup_nrf52.S \
   $(SDK_ROOT)/components/toolchain/system_nrf52.c \
-  $(SDK_ROOT)/components/ble/ble_services/ble_ancs_c/ble_ancs_c.c \
+  $(PROJ_DIR)/SDK.mod/ble_ancs_c.c \
   $(SDK_ROOT)/components/softdevice/common/softdevice_handler/softdevice_handler.c \
 
 # Include folders common to all targets
@@ -65,7 +65,7 @@ INC_FOLDERS += \
   $(PROJ_DIR)/config \
   $(SDK_ROOT)/components/drivers_nrf/comp \
   $(SDK_ROOT)/components/drivers_nrf/twi_master \
-  $(SDK_ROOT)/components/ble/ble_services/ble_ancs_c \
+  $(PROJ_DIR)/SDK.mod \
   $(SDK_ROOT)/components/ble/ble_services/ble_ias_c \
   $(SDK_ROOT)/components/libraries/pwm \
   $(SDK_ROOT)/components/softdevice/s132/headers/nrf52 \
