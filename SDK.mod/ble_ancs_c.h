@@ -113,6 +113,11 @@ extern "C" {
 #define BLE_ANCS_EVENT_FLAG_POSITIVE_ACTION 3       /**< 0b....1... Positive action: Fourth (LSB) bit is set. All flags can be active at the same time.*/
 #define BLE_ANCS_EVENT_FLAG_NEGATIVE_ACTION 4       /**< 0b...1.... Negative action: Fifth (LSB) bit is set. All flags can be active at the same time. */
 
+#define ANCS_ERROR_UNKNOWN_CMD              0xA0    /**< The commandID was not recognized by the NP. */
+#define ANCS_ERROR_INVALID_CMD              0xA1    /**< The command was improperly formatted. */
+#define ANCS_ERROR_INVALID_PARAM            0xA2    /**< One of the parameters (for example, the NotificationUID) does not refer to an existing object on the NP. */
+#define ANCS_ERROR_ACTION_FAILED            0xA3    /**< The action was not performed. */
+
 
 /**@brief Event types that are passed from client to application on an event. */
 typedef enum
@@ -122,7 +127,8 @@ typedef enum
     BLE_ANCS_C_EVT_NOTIF,                      /**< An iOS notification was received on the notification source control point. */
     BLE_ANCS_C_EVT_INVALID_NOTIF,              /**< An iOS notification was received on the notification source control point, but the format is invalid. */
     BLE_ANCS_C_EVT_NOTIF_ATTRIBUTE,            /**< A received iOS notification attribute has been parsed. */
-    BLE_ANCS_C_EVT_NOTIF_ATTRIBUTE_DONE        /**< All iOS notification attributes requested by @ref ble_ancs_c_request_attrs() have been received */
+    BLE_ANCS_C_EVT_NOTIF_ATTRIBUTE_DONE,       /**< All iOS notification attributes requested by @ref ble_ancs_c_request_attrs() have been received */
+    BLE_ANCS_C_EVT_NOTIF_ATTRIBUTE_ERR         /**< An error happened when requesting attributes from iOS. Error details in @ref ble_ancs_c_evt_t.error_code */
 } ble_ancs_c_evt_type_t;
 
 /**@brief Category IDs for iOS notifications. */
