@@ -864,6 +864,8 @@ uint32_t ble_db_discovery_start(ble_db_discovery_t * const p_db_discovery,
         return NRF_ERROR_BUSY;
     }
 
+    memset(p_db_discovery, 0, sizeof(ble_db_discovery_t));
+
     p_db_discovery->conn_handle = conn_handle;
     ble_gatt_db_srv_t * p_srv_being_discovered;
 
