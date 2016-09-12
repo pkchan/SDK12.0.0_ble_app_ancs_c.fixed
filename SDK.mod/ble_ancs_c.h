@@ -121,7 +121,8 @@ typedef enum
     BLE_ANCS_C_EVT_DISCOVERY_FAILED,           /**< It was not possible to discover the service or characteristics of the connected peer. */
     BLE_ANCS_C_EVT_NOTIF,                      /**< An iOS notification was received on the notification source control point. */
     BLE_ANCS_C_EVT_INVALID_NOTIF,              /**< An iOS notification was received on the notification source control point, but the format is invalid. */
-    BLE_ANCS_C_EVT_NOTIF_ATTRIBUTE             /**< A received iOS notification attribute has been parsed. */
+    BLE_ANCS_C_EVT_NOTIF_ATTRIBUTE,            /**< A received iOS notification attribute has been parsed. */
+    BLE_ANCS_C_EVT_NOTIF_ATTRIBUTE_DONE        /**< All iOS notification attributes requested by @ref ble_ancs_c_request_attrs() have been received */
 } ble_ancs_c_evt_type_t;
 
 /**@brief Category IDs for iOS notifications. */

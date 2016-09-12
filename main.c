@@ -542,6 +542,10 @@ static void on_ancs_c_evt(ble_ancs_c_evt_t * p_evt)
             notif_attr_print(&p_evt->attr);
             break;
 
+        case BLE_ANCS_C_EVT_NOTIF_ATTRIBUTE_DONE:
+            NRF_LOG_DEBUG("All requested attributes have been received.\r\n");
+            break;
+
         case BLE_ANCS_C_EVT_DISCOVERY_FAILED:
             NRF_LOG_DEBUG("Apple Notification Service not discovered on the server.\r\n");
             break;

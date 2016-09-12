@@ -286,20 +286,15 @@ static ble_ancs_c_parse_state_t attr_id_parse(ble_ancs_c_t * p_ancs,
     p_ancs->evt.attr.attr_id     = (ble_ancs_c_notif_attr_id_values_t) p_data_src[(*index)++];
     p_ancs->evt.attr.p_attr_data = p_ancs->ancs_attr_list[p_ancs->evt.attr.attr_id].p_attr_data;
 
-    if (p_ancs->expected_number_of_attrs == 0)
-    {
-        NRF_LOG_INFO("All requested attributes received\r\n");
-       // (*index)++;
-        return DONE;
-    }
-    else if (p_ancs->ancs_attr_list[p_ancs->evt.attr.attr_id].get == true)
+    p_ancs->expected_number_of_attrs--;
+
+    if (p_ancs->ancs_attr_list[p_ancs->evt.attr.attr_id].get == true)
     {
         NRF_LOG_INFO("Attribute ID %i \r\n", p_ancs->evt.attr.attr_id);
         return ATTR_LEN1;
     }
     else
     {
-        p_ancs->expected_number_of_attrs--;
         return ATTR_ID;
     }
 }
@@ -391,7 +386,18 @@ static ble_ancs_c_parse_state_t attr_data_parse(ble_ancs_c_t * p_ancs, const uin
         NRF_LOG_INFO("Attribute finished!\r\n");
         p_ancs->evt.evt_type = BLE_ANCS_C_EVT_NOTIF_ATTRIBUTE;
         p_ancs->evt_handler(&p_ancs->evt);
-        return ATTR_ID;
+        
+        if (p_ancs->expected_number_of_attrs == 0)
+        {
+            NRF_LOG_INFO("[ANCS]: All requested attributes received\n\r");
+            p_ancs->evt.evt_type = BLE_ANCS_C_EVT_NOTIF_ATTRIBUTE_DONE;
+            p_ancs->evt_handler(&p_ancs->evt);
+            return DONE;
+        }
+        else 
+        {
+            return ATTR_ID;
+        }
     }
     return ATTR_DATA;
 }
