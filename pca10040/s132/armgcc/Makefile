@@ -40,7 +40,7 @@ SRC_FILES += \
   $(SDK_ROOT)/components/ble/ble_advertising/ble_advertising.c \
   $(SDK_ROOT)/components/ble/common/ble_conn_params.c \
   $(SDK_ROOT)/components/ble/common/ble_conn_state.c \
-  $(SDK_ROOT)/components/ble/ble_db_discovery/ble_db_discovery.c \
+  $(PROJ_DIR)/SDK.mod/ble_db_discovery.c \
   $(SDK_ROOT)/components/ble/common/ble_srv_common.c \
   $(SDK_ROOT)/components/ble/peer_manager/gatt_cache_manager.c \
   $(SDK_ROOT)/components/ble/peer_manager/gatts_cache_manager.c \

@@ -684,7 +684,7 @@
               </FileOption>            </File>            <File>
               <FileName>ble_db_discovery.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\..\components\ble\ble_db_discovery\ble_db_discovery.c</FilePath>              <FileOption>
+              <FilePath>..\..\..\SDK.mod\ble_db_discovery.c</FilePath>              <FileOption>
                 <CommonProperty>
                   <UseCPPCompiler>0</UseCPPCompiler>
                   <RVCTCodeConst>0</RVCTCodeConst>
@@ -3100,7 +3100,7 @@
               </FileOption>            </File>            <File>
               <FileName>ble_db_discovery.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\..\components\ble\ble_db_discovery\ble_db_discovery.c</FilePath>              <FileOption>
+              <FilePath>..\..\..\SDK.mod\ble_db_discovery.c</FilePath>              <FileOption>
                 <CommonProperty>
                   <UseCPPCompiler>0</UseCPPCompiler>
                   <RVCTCodeConst>0</RVCTCodeConst>
