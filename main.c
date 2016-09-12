@@ -550,6 +550,10 @@ static void on_ancs_c_evt(ble_ancs_c_evt_t * p_evt)
             NRF_LOG_DEBUG("Apple Notification Service not discovered on the server.\r\n");
             break;
 
+        case BLE_ANCS_C_EVT_NOTIF_ATTRIBUTE_ERR:
+            NRF_LOG_DEBUG("ANCS Attribute request failed: 0x%02X\r\n", p_evt->error_code);
+            break;
+            
         default:
             // No implementation needed.
             break;
