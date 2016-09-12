@@ -804,6 +804,8 @@ static void on_ble_evt(ble_evt_t * p_ble_evt)
 
                 m_is_wl_changed = false;
             }
+            err_code = app_timer_stop (m_sec_req_timer_id);
+            APP_ERROR_CHECK(err_code);
             break; // BLE_GAP_EVT_DISCONNECTED
 
         case BLE_GATTC_EVT_TIMEOUT:
