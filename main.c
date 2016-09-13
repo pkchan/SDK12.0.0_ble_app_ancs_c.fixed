@@ -43,6 +43,7 @@
 #include "peer_manager.h"
 #include "app_timer.h"
 #include "nrf_soc.h"
+#include "nrf_nvic.h"
 #include "bsp.h"
 #include "bsp_btn_ble.h"
 #include "softdevice_handler.h"
@@ -703,6 +704,12 @@ static void sleep_mode_enter(void)
 
     // Go to system-off mode (this function will not return; wakeup will cause a reset).
     err_code = sd_power_system_off();
+    if (err_code == (NRF_ERROR_SOC_BASE_NUM | NRF_ERROR_NOT_SUPPORTED))
+    {
+        // Emulated System OFF mode
+        err_code = sd_nvic_SystemReset();
+        APP_ERROR_CHECK(err_code);
+    }
     APP_ERROR_CHECK(err_code);
 }
 
