@@ -98,6 +98,7 @@
 #define MESSAGE_BUFFER_SIZE            18                                          /**< Size of buffer holding optional messages in notifications. */
 
 #define SECURITY_REQUEST_DELAY         APP_TIMER_TICKS(1500, APP_TIMER_PRESCALER)  /**< Delay after connection until security request is sent, if necessary (ticks). */
+#define SRV_REDISC_DELAY               APP_TIMER_TICKS(3000, APP_TIMER_PRESCALER)  /**< Delay after service discovery retry */
 
 #define SEC_PARAM_BOND                 1                                           /**< Perform bonding. */
 #define SEC_PARAM_MITM                 0                                           /**< Man In The Middle protection not required. */
@@ -165,6 +166,7 @@ static uint16_t           m_cur_conn_handle = BLE_CONN_HANDLE_INVALID;          
 static bool               m_ancs_found = false;                                     /**< Flag telling whether ANCS has been found. */
 
 APP_TIMER_DEF(m_sec_req_timer_id);                                                  /**< Security request timer. The timer lets us start pairing request if one does not arrive from the Central. */
+APP_TIMER_DEF(m_srv_disc_timer_id);                                                 /**< Service re-discovery timer. */
 
 static ble_ancs_c_evt_notif_t m_notification_latest;                                /**< Local copy to keep track of the newest arriving notifications. */
 
@@ -398,6 +400,38 @@ static void pm_evt_handler(pm_evt_t const * p_evt)
 }
 
 
+/**@brief Function for handling the service re-discovery timer time-out.
+ *
+ * @details This function is called each time the service re-discovery timer expires.
+ *
+ * @param[in] p_context  Pointer used for passing context information from the
+ *                       app_start_timer() call to the time-out handler.
+ */
+static void srv_redisc_timeout_handler(void * p_context)
+{
+    uint32_t err_code;
+
+    if (m_ancs_found)
+    {
+        NRF_LOG_DEBUG("ANCS already discovered. No need to retry.\n\r");
+        return;
+    }
+
+    NRF_LOG_DEBUG("Restart reverse service discovery.\n\r");
+    err_code = ble_db_discovery_start(&m_ble_db_discovery, m_ble_db_discovery.conn_handle);
+    if (err_code != NRF_ERROR_BUSY)
+    {
+        APP_ERROR_CHECK(err_code);
+    }
+    else
+    {
+        // restart service discovery after 3s, because there is no indication of the end of discovery
+        err_code = app_timer_start(m_srv_disc_timer_id, SRV_REDISC_DELAY, NULL);
+        APP_ERROR_CHECK(err_code);
+    }
+}
+
+
 /**@brief Function for handling the security request timer time-out.
  *
  * @details This function is called each time the security request timer expires.
@@ -513,6 +547,12 @@ static void timers_init(void)
     err_code = app_timer_create(&m_sec_req_timer_id,
                                 APP_TIMER_MODE_SINGLE_SHOT,
                                 sec_req_timeout_handler);
+    APP_ERROR_CHECK(err_code);
+
+    // Create service re-discovery timer.
+    err_code = app_timer_create(&m_srv_disc_timer_id,
+                                APP_TIMER_MODE_SINGLE_SHOT,
+                                srv_redisc_timeout_handler);
     APP_ERROR_CHECK(err_code);
 }
 
@@ -1074,6 +1114,12 @@ static void svc_changed_handler (ble_srv_changed_c_evt_t * p_evt)
                 err_code = ble_db_discovery_start(&m_ble_db_discovery, p_evt->conn_handle);
                 if (err_code != NRF_ERROR_BUSY)
                 {
+                    APP_ERROR_CHECK(err_code);
+                }
+                else
+                {
+                    // restart service discovery after 3s, because there is no indication of the end of discovery
+                    err_code = app_timer_start(m_srv_disc_timer_id, SRV_REDISC_DELAY, NULL);
                     APP_ERROR_CHECK(err_code);
                 }
             }
