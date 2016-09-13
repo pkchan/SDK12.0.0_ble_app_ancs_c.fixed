@@ -57,6 +57,7 @@
 #define NRF_LOG_MODULE_NAME "APP"
 #include "nrf_log.h"
 #include "nrf_log_ctrl.h"
+#include "ble_srv_changed_c.h"
 
 
 #if BUTTONS_NUMBER < 2
@@ -158,8 +159,10 @@ static const char * lit_attrid[BLE_ANCS_NB_OF_ATTRS] =
 
 static ble_ancs_c_t       m_ancs_c;                                                 /**< Structure used to identify the Apple Notification Service Client. */
 static ble_db_discovery_t m_ble_db_discovery;                                       /**< Structure used to identify the DB Discovery module. */
+static ble_srv_changed_c_t m_srv_changed_c;                                         /**< Structure used to identify the service changed client. */
 static pm_peer_id_t       m_peer_id;                                                /**< Device reference handle to the current bonded central. */
 static uint16_t           m_cur_conn_handle = BLE_CONN_HANDLE_INVALID;              /**< Handle of the current connection. */
+static bool               m_ancs_found = false;                                     /**< Flag telling whether ANCS has been found. */
 
 APP_TIMER_DEF(m_sec_req_timer_id);                                                  /**< Security request timer. The timer lets us start pairing request if one does not arrive from the Central. */
 
@@ -529,6 +532,7 @@ static void on_ancs_c_evt(ble_ancs_c_evt_t * p_evt)
     {
         case BLE_ANCS_C_EVT_DISCOVERY_COMPLETE:
             NRF_LOG_DEBUG("Apple Notification Service discovered on the server.\r\n");
+            m_ancs_found = true;
             err_code = ble_ancs_c_handles_assign(&m_ancs_c, p_evt->conn_handle, &p_evt->service);
             APP_ERROR_CHECK(err_code);
             apple_notification_setup();
@@ -646,6 +650,7 @@ static void conn_params_init(void)
 static void db_disc_handler(ble_db_discovery_evt_t * p_evt)
 {
     ble_ancs_c_on_db_disc_evt(&m_ancs_c, p_evt);
+    ble_srv_changed_c_on_db_disc_evt(&m_srv_changed_c, p_evt);
 }
 
 
@@ -794,6 +799,9 @@ static void on_ble_evt(ble_evt_t * p_ble_evt)
             err_code = bsp_indication_set(BSP_INDICATE_CONNECTED);
             APP_ERROR_CHECK(err_code);
             m_cur_conn_handle = p_ble_evt->evt.gap_evt.conn_handle;
+
+            m_ancs_found = false;
+
             err_code = app_timer_start(m_sec_req_timer_id, SECURITY_REQUEST_DELAY, NULL);
             APP_ERROR_CHECK(err_code);
             break; // BLE_GAP_EVT_CONNECTED
@@ -922,6 +930,7 @@ static void ble_evt_dispatch(ble_evt_t * p_ble_evt)
     bsp_btn_ble_on_ble_evt(p_ble_evt);
     on_ble_evt(p_ble_evt);
     ble_advertising_on_ble_evt(p_ble_evt);
+    ble_srv_changed_c_on_ble_evt(&m_srv_changed_c, p_ble_evt);
 }
 
 
@@ -1045,6 +1054,47 @@ static void services_init(void)
 }
 
 
+/**@brief Service changed client callback */
+static void svc_changed_handler (ble_srv_changed_c_evt_t * p_evt)
+{
+    uint32_t err_code = NRF_SUCCESS;
+
+    switch (p_evt->evt_type)
+    {
+        case BLE_SRV_CHANGED_C_EVT_CHAR_FOUND:
+            NRF_LOG_DEBUG("BLE_SRV_CHANGED_C_EVT_CHAR_FOUND.\n\r");
+            ble_srv_changed_c_enable_indication(&m_srv_changed_c, true);
+            break;
+
+        case BLE_SRV_CHANGED_C_EVT_SRV_CHANGED:
+            NRF_LOG_DEBUG("BLE_SRV_CHANGED_C_EVT_SRV_CHANGED.\n\r");
+            if (!m_ancs_found)
+            {
+                NRF_LOG_DEBUG("Restart reverse service discovery.\n\r");
+                err_code = ble_db_discovery_start(&m_ble_db_discovery, p_evt->conn_handle);
+                if (err_code != NRF_ERROR_BUSY)
+                {
+                    APP_ERROR_CHECK(err_code);
+                }
+            }
+            break;
+
+        default:
+            break;
+    }
+}
+
+
+/**@brief Function for initializing the service changed client */
+static void srv_changed_init (void)
+{
+    uint32_t err_code;
+
+    err_code = ble_srv_changed_c_init(&m_srv_changed_c, svc_changed_handler);
+    APP_ERROR_CHECK(err_code);
+}
+
+
 /**@brief Function for initializing the advertising functionality.
  */
 static void advertising_init(void)
@@ -1161,6 +1211,7 @@ int main(void)
     db_discovery_init();
     scheduler_init();
     gap_params_init();
+    srv_changed_init();
     services_init();
     advertising_init();
     conn_params_init();
