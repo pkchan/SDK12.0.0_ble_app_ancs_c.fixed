@@ -581,6 +581,33 @@ static void on_write_rsp(ble_ancs_c_t * p_ancs, const ble_evt_t * p_ble_evt)
     {
         return;
     }
+
+    // Check if the handle is ANCS control point.
+    if (p_ble_evt->evt.gattc_evt.params.write_rsp.handle == p_ancs->service.control_point_char.handle_value)
+    {
+        // Check if error code is in the reserved range
+        if ((p_ble_evt->evt.gattc_evt.gatt_status >= BLE_GATT_STATUS_ATTERR_RFU_RANGE2_BEGIN)
+            && (p_ble_evt->evt.gattc_evt.gatt_status <= BLE_GATT_STATUS_ATTERR_RFU_RANGE3_END))
+        {
+            /* ANCS error code */
+            uint32_t ancs_err_code = p_ble_evt->evt.gattc_evt.gatt_status & 0x00FF;
+
+            if ((ancs_err_code >= ANCS_ERROR_UNKNOWN_CMD) && (ancs_err_code <= ANCS_ERROR_ACTION_FAILED))
+            {
+                /* Reset parser state machine */
+                p_ancs->parse_state = DONE;
+                
+                /* Notify application */
+                ble_ancs_c_evt_t evt;
+                evt.evt_type    = BLE_ANCS_C_EVT_NOTIF_ATTRIBUTE_ERR;
+                evt.conn_handle = p_ble_evt->evt.gattc_evt.conn_handle;
+                evt.error_code  = ancs_err_code;
+            
+                p_ancs->evt_handler(&evt);
+            }
+        }
+    }
+	
     // Check if there is any message to be sent across to the peer and send it.
     tx_buffer_process();
 }
