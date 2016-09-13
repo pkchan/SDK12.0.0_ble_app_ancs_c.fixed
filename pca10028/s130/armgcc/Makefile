@@ -54,6 +54,7 @@ SRC_FILES += \
   $(SDK_ROOT)/components/ble/peer_manager/pm_mutex.c \
   $(SDK_ROOT)/components/ble/peer_manager/security_dispatcher.c \
   $(SDK_ROOT)/components/ble/peer_manager/security_manager.c \
+  $(PROJ_DIR)/custom/ble_srv_changed_c.c \
   $(SDK_ROOT)/components/toolchain/gcc/gcc_startup_nrf51.S \
   $(SDK_ROOT)/components/toolchain/system_nrf51.c \
   $(PROJ_DIR)/SDK.mod/ble_ancs_c.c \
@@ -66,6 +67,7 @@ INC_FOLDERS += \
   $(SDK_ROOT)/components/drivers_nrf/comp \
   $(SDK_ROOT)/components/drivers_nrf/twi_master \
   $(PROJ_DIR)/SDK.mod \
+  $(PROJ_DIR)/custom \
   $(SDK_ROOT)/components/ble/ble_services/ble_ias_c \
   $(SDK_ROOT)/components/softdevice/s130/headers \
   $(SDK_ROOT)/components/libraries/pwm \
