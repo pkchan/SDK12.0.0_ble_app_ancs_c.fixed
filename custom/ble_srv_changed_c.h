@@ -28,6 +28,7 @@ typedef enum
     BLE_SRV_CHANGED_C_EVT_CHAR_FOUND,           /**< Event indicating that the service changed indication has been found. */
     BLE_SRV_CHANGED_C_EVT_CHAR_NOT_FOUND,       /**< Event indicating that the service changed indication has NOT been found. */
     BLE_SRV_CHANGED_C_EVT_SRV_CHANGED,          /**< Event indicating that service changed indication has been received. */
+    BLE_SRV_CHANGED_C_EVT_ERR_RSP,              /**< Error when sending response. */
 } ble_srv_changed_c_evt_type_t;
 
 

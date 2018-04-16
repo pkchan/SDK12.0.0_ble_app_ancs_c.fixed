@@ -27,6 +27,8 @@ static const ble_uuid_t m_svc_changed_uuid = {BLE_UUID_GATT, BLE_UUID_TYPE_BLE};
 static void on_hvx (ble_srv_changed_c_t * const p_srv_changed_c,
                     const ble_gattc_evt_t * const p_ble_gattc_evt)
 {
+    uint32_t err_code = NRF_SUCCESS;
+
     if (p_ble_gattc_evt->params.hvx.handle == p_srv_changed_c->srv_changed_char.handle_value)
     {
         if (p_srv_changed_c->p_handler != NULL)
@@ -38,6 +40,15 @@ static void on_hvx (ble_srv_changed_c_t * const p_srv_changed_c,
             evt.conn_handle = p_ble_gattc_evt->conn_handle;
             SVC_CH_LOG ("[SRV_CH] Service-changed indication.\n\r");
             evt_handler(&evt);
+
+            err_code = sd_ble_gattc_hv_confirm(p_srv_changed_c->conn_handle, p_ble_gattc_evt->params.hvx.handle);
+            if (err_code != NRF_SUCCESS)
+            {
+                evt.evt_type    = BLE_SRV_CHANGED_C_EVT_ERR_RSP;
+                evt.conn_handle = p_ble_gattc_evt->conn_handle;
+                SVC_CH_LOG ("[SRV_CH] Error responding to Service-changed indication.\n\r");
+                evt_handler(&evt);
+            }
         }
     }
 }
